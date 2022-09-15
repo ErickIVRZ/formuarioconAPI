@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import {useForm} from "react-hook-form"
 
 
 const ToDoForm = ({addTarea,tareaSelected,updateTarea,deselectTarea}) => {
 
-  const [title,setTitle]=useState("")
-  const [description,setDescription]=useState("")
-  const [isCompleted,setIsCompleted]=useState(false)
+  
+  const {register, handleSubmit,reset}=useForm()
 
   
 
 
   useEffect(()=>{
-    if(tareaSelected !== null){
-      setTitle(tareaSelected.title)
-      setDescription(tareaSelected.description)
-      setIsCompleted(tareaSelected.isCompleted)
+    if(tareaSelected){
+      reset(tareaSelected)
     }
   },[tareaSelected])
 
@@ -23,28 +21,21 @@ const ToDoForm = ({addTarea,tareaSelected,updateTarea,deselectTarea}) => {
   
 
 
-  const submit=(e)=>{
-    e.preventDefault();
-  
-    const newTarea={
-      
-      title:title,
-      description:description,
-      isCompleted:isCompleted
-    }
-    console.log(newTarea);
+  const submit=(data)=>{
+    console.log(data);
     if(tareaSelected){
-      updateTarea(newTarea)
+      updateTarea(data)
     }else{
-      addTarea(newTarea)
+      addTarea(data)
     }
-    
   }
 
   const clear=()=>{
-    setTitle("")
-    setDescription("")
-    setIsCompleted(false)
+    reset({
+      title:"",
+      description:"",
+      isCompleted:false
+    })
     deselectTarea()
   }
   
@@ -53,14 +44,13 @@ const ToDoForm = ({addTarea,tareaSelected,updateTarea,deselectTarea}) => {
 
 
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={handleSubmit(submit)}>
 
     <div>
     <label htmlFor="title">Text</label>
     <input type="text"
      id="title"
-     value={title}
-     onChange={e=>setTitle(e.target.value)}
+     {...register("title")}
      /> 
     </div>
 
@@ -68,8 +58,7 @@ const ToDoForm = ({addTarea,tareaSelected,updateTarea,deselectTarea}) => {
     <label htmlFor="description">Description</label>
       <textarea type='text'
       id="description"
-      value={description}
-      onChange={e=>setDescription(e.target.value)}
+      {...register("description")}
       />
     </div>
 
@@ -77,8 +66,7 @@ const ToDoForm = ({addTarea,tareaSelected,updateTarea,deselectTarea}) => {
     <label htmlFor="isCompleted">is Completed</label>
     <input type="checkbox"
      id="isCompleted"
-     checked={isCompleted}
-     onChange={(e) => setIsCompleted(e.target.checked)}
+     {...register("isCompleted")}
       />
 
     </div>
